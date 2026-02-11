@@ -1,0 +1,40 @@
+import express from 'express';
+import { stiggClient } from '../stigg.js';
+
+const router = express.Router();
+const CAMPAIGNS_FEATURE_ID = 'feature-02-campaigns';
+
+export const campaignsStore = [];
+
+router.get('/', (req, res) => {
+  res.json(campaignsStore);
+});
+
+router.post('/', async (req, res) => {
+  const { campaign, customerId } = req.body;
+
+  if (!campaign || !customerId) {
+    return res.status(400).json({ error: 'Campaign and customerId are required' });
+  }
+
+  try {
+    // first, check if the customer is entitled to create a campaign
+    const entitlement = await stiggClient.getMeteredEntitlement({
+      customerId,
+      featureId: CAMPAIGNS_FEATURE_ID,
+      options: { requestedUsage: 1 },
+    });
+    if (!entitlement.hasAccess) {
+      return res.status(403).json({ error: 'You do not have access to the feature. Please upgrade your plan.' });
+    }
+    // then, we'll save the campaign to our "database" and report the usage to Stigg
+    campaignsStore.push(campaign);
+    await stiggClient.reportUsage({ customerId, featureId: CAMPAIGNS_FEATURE_ID, value: 1 });
+    return res.status(201).json(campaign);
+  } catch (error) {
+    console.error('Failed to create campaign:', error);
+    return res.status(500).json({ error: 'Failed to create campaign' });
+  }
+});
+
+export default router;
