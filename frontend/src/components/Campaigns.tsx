@@ -54,9 +54,6 @@ export default function Campaigns() {
 
   return (
     <div className="app campaigns-page">
-      <p className="app-note" aria-label="note">
-        * Campaigns: with Sidecar implementation (not implemented yet)
-      </p>
       <h1>Campaigns</h1>
 
       <div className="templates-usage">

@@ -55,9 +55,6 @@ function Templates() {
 
   return (
     <div className="app">
-      <p className="app-note" aria-label="note">
-        * Templates: without Sidecar implementation
-      </p>
       <h1>Templates</h1>
 
       <div className="templates-usage">

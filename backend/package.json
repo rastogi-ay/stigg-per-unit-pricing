@@ -13,7 +13,6 @@
   "license": "ISC",
   "dependencies": {
     "@stigg/node-server-sdk": "^4.0.0",
-    "@stigg/sidecar": "^5.194.5",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.18.2"
