@@ -5,7 +5,7 @@ import { useGetMeteredEntitlement } from '../entitlements/useGetMeteredEntitleme
 import { fetchCampaigns, createCampaign } from '../api/campaigns';
 
 const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
-const CAMPAIGNS_FEATURE_ID = 'feature-02-campaigns';
+const CAMPAIGNS_FEATURE_ID = 'feature-02-campaigns'; // feature ID from Stigg
 
 export interface Campaign {
   id: string;
@@ -14,7 +14,7 @@ export interface Campaign {
 }
 
 export default function Campaigns() {
-  // Stigg context hook to get the current usage and usage limit for the campaigns feature
+  // custom hook to get the relevant entitlement information for the campaigns feature
   const { currentUsage, usageLimit, hasAccess, refreshData } = useGetMeteredEntitlement(CAMPAIGNS_FEATURE_ID);
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -30,7 +30,9 @@ export default function Campaigns() {
       };
       try {
         if (hasAccess) {
+          // create the campaign and report the usage to Stigg
           const campaign = await createCampaign(newCampaign, CUSTOMER_ID);
+          // refresh the data immediately to update the entitlement status
           await refreshData();
           setCampaigns((prev) => [...prev, campaign]);
           setName('');

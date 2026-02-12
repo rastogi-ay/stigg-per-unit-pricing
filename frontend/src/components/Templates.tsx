@@ -5,7 +5,7 @@ import { useGetMeteredEntitlement } from '../entitlements/useGetMeteredEntitleme
 import { fetchTemplates, createTemplate } from '../api/templates';
 
 const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
-const TEMPLATES_FEATURE_ID = 'feature-01-templates';
+const TEMPLATES_FEATURE_ID = 'feature-01-templates'; // feature ID from Stigg
 
 export interface Template {
   id: number;
@@ -14,7 +14,7 @@ export interface Template {
 }
 
 function Templates() {
-  // Stigg context hook to get the current usage and usage limit for the templates feature
+  // custom hook to get the relevant entitlement information for the templates feature
   const { currentUsage, usageLimit, hasAccess, refreshData } = useGetMeteredEntitlement(TEMPLATES_FEATURE_ID);
 
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -31,7 +31,9 @@ function Templates() {
 
       try {
         if (hasAccess) {
+          // create the template and report the usage to Stigg
           const template = await createTemplate(newTemplate, CUSTOMER_ID);
+          // refresh the data immediately to update the entitlement status
           await refreshData();
           setTemplates((prev) => [...prev, template]);
           setTitle('');

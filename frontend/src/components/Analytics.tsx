@@ -4,17 +4,20 @@ import '../styles/Analytics.css';
 import { useGetBooleanEntitlement } from '../entitlements/useGetBooleanEntitlement';
 import { fetchAnalytics } from '../api/analytics';
 
-const ANALYTICS_FEATURE_ID = 'feature-04-analytics';
 const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
+const ANALYTICS_FEATURE_ID = 'feature-04-analytics'; // feature ID from Stigg
 
 export default function Analytics() {
-  const { hasAccess } = useGetBooleanEntitlement(ANALYTICS_FEATURE_ID);
+  // custom hook to get the relevant entitlement information for the analytics feature
+  const hasAccess = useGetBooleanEntitlement(ANALYTICS_FEATURE_ID);
+
   const [templateCount, setTemplateCount] = useState<number | null>(null);
   const [campaignCount, setCampaignCount] = useState<number | null>(null);
   const [hiddenMessage, setHiddenMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!hasAccess || !CUSTOMER_ID) return;
+    // if the customer does not have access to the analytics feature, return
+    if (!hasAccess) return;
 
     let cancelled = false;
 

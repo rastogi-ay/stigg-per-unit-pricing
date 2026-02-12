@@ -7,6 +7,7 @@ import Analytics from './components/Analytics';
 
 function App() {
   return (
+    // initialize the StiggProvider with the client API key and customer ID
     <StiggProvider apiKey={import.meta.env.VITE_STIGG_CLIENT_API_KEY} customerId={import.meta.env.VITE_STIGG_CUSTOMER_ID}>
       <BrowserRouter>
         <AppNav />
