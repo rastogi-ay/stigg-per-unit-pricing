@@ -17,15 +17,20 @@ This repo is a **lightweight reference implementation** for:
 - **Node.js** 18+
 - A **Stigg** account and project (for API keys and feature setup)
 
-If you're setting up Stigg for the first time, you'll see this screen:
+### Stigg setup
 
-![Stigg setup — pricing model selection](images/Screenshot%202026-02-12%20at%204.54.26%20PM.png)
+**First-time setup** — When you're new to Stigg, you'll see the pricing model screen below. **Choose "Per Unit"** as the pricing model.
 
-**Select "Per Unit" for the pricing model**
+![Stigg setup — pricing model selection](images/pricing-model-selection.png)
 
-If you already have a Stigg account, navigate to the "Getting started" button in the sidebar:
 
-Then, click on "Generate sandbox"
+**Existing account** — If you already have a Stigg project, go to **Getting started** in the sidebar. You'll see a screen like this:
+
+![Stigg — Getting started](images/getting-started-screen.png)
+
+Then **click "Generate sandbox"** to create a per-unit sandbox.
+
+---
 
 ### 1. Clone and install
 
