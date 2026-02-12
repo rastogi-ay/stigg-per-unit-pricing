@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import templatesRouter from './routes/templates.js';
 import campaignsRouter from './routes/campaigns.js';
 import analyticsRouter from './routes/analytics.js';
-import { stiggClient } from './stigg.js';
+import { stiggClient } from './stigg/stigg.js';
 
 dotenv.config();
 
@@ -29,6 +29,7 @@ app.use('/api/templates', templatesRouter);
 app.use('/api/campaigns', campaignsRouter);
 app.use('/api/analytics', analyticsRouter);
 
+// Start the server, wait for Stigg client to initialize
 export async function startServer() {
   await stiggClient.waitForInitialization();
 
@@ -40,6 +41,7 @@ export async function startServer() {
   return server;
 }
 
+// Shutdown the server, close Stigg client
 export async function shutdown() {
   if (!server) return;
 

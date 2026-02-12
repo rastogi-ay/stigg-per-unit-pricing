@@ -1,9 +1,8 @@
 import express from 'express';
-import { stiggClient } from '../stigg.js';
+import { stiggClient } from '../stigg/stigg.js';
+import { TEMPLATES_FEATURE_ID } from '../stigg/features.js';
 
 const router = express.Router();
-const TEMPLATES_FEATURE_ID = 'feature-01-templates';
-
 export const templatesStore = [];
 
 router.get('/', (req, res) => {
@@ -19,7 +18,11 @@ router.post('/', async (req, res) => {
 
   try {
     // first, check if the customer is entitled to create a template
-    const entitlement = await stiggClient.getMeteredEntitlement({ customerId, featureId: TEMPLATES_FEATURE_ID, options: { requestedUsage: 1 } });
+    const entitlement = await stiggClient.getMeteredEntitlement({
+      customerId,
+      featureId: TEMPLATES_FEATURE_ID,
+      options: { requestedUsage: 1 },
+    });
     if (!entitlement.hasAccess) {
       return res.status(403).json({ error: 'You do not have access to the feature. Please upgrade your plan.' });
     }

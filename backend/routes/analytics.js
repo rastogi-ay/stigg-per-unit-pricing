@@ -1,10 +1,10 @@
 import express from 'express';
-import { stiggClient } from '../stigg.js';
+import { stiggClient } from '../stigg/stigg.js';
+import { ANALYTICS_FEATURE_ID } from '../stigg/features.js';
 import { templatesStore } from './templates.js';
 import { campaignsStore } from './campaigns.js';
 
 const router = express.Router();
-const ANALYTICS_FEATURE_ID = 'feature-04-analytics';
 
 router.get('/', async (req, res) => {
   const customerId = req.query.customerId;

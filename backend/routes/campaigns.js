@@ -1,9 +1,8 @@
 import express from 'express';
-import { stiggClient } from '../stigg.js';
+import { stiggClient } from '../stigg/stigg.js';
+import { CAMPAIGNS_FEATURE_ID } from '../stigg/features.js';
 
 const router = express.Router();
-const CAMPAIGNS_FEATURE_ID = 'feature-02-campaigns';
-
 export const campaignsStore = [];
 
 router.get('/', (req, res) => {
