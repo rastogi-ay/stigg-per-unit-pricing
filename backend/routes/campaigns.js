@@ -23,12 +23,15 @@ router.post('/', async (req, res) => {
       featureId: CAMPAIGNS_FEATURE_ID,
       options: { requestedUsage: 1 },
     });
+    console.log("Campaigns Entitlement:", entitlement);
     if (!entitlement.hasAccess) {
       return res.status(403).json({ error: 'You do not have access to the feature. Please upgrade your plan.' });
     }
-    // then, we'll save the campaign to our "database" and report the usage to Stigg
+    // then, we'll report the usage to Stigg and save the campaign to our "database"
+    const reportUsage = await stiggClient.reportUsage({ customerId, featureId: CAMPAIGNS_FEATURE_ID, value: 1 });
+    console.log("Reported Usage of Campaign:", reportUsage);
     campaignsStore.push(campaign);
-    await stiggClient.reportUsage({ customerId, featureId: CAMPAIGNS_FEATURE_ID, value: 1 });
+
     return res.status(201).json(campaign);
   } catch (error) {
     console.error('Failed to create campaign:', error);

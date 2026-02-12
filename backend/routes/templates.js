@@ -23,12 +23,15 @@ router.post('/', async (req, res) => {
       featureId: TEMPLATES_FEATURE_ID,
       options: { requestedUsage: 1 },
     });
+    console.log("Templates Entitlement:", entitlement);
     if (!entitlement.hasAccess) {
       return res.status(403).json({ error: 'You do not have access to the feature. Please upgrade your plan.' });
     }
-    // then, we'll save the template to our "database" and report the usage to Stigg
+    // then, we'll report the usage to Stigg and save the template to our "database"
+    const reportUsage = await stiggClient.reportUsage({ customerId, featureId: TEMPLATES_FEATURE_ID, value: 1 });
+    console.log("Reported Usage of Template:", reportUsage);
     templatesStore.push(template);
-    await stiggClient.reportUsage({ customerId, featureId: TEMPLATES_FEATURE_ID, value: 1 });
+
     return res.status(201).json(template);
   } catch (error) {
     console.error('Failed to create template:', error);

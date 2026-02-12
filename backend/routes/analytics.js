@@ -21,12 +21,16 @@ router.get('/', async (req, res) => {
       customerId,
       featureId: ANALYTICS_FEATURE_ID,
     });
+    console.log("Analytics Entitlement:", analyticsEntitlement);
     if (!analyticsEntitlement.hasAccess) {
       return res.status(403).json({ error: 'You do not have access to analytics. Please upgrade your plan.' });
     }
     // then, get the usage of the templates and campaigns features
     const templatesEntitlement = await stiggClient.getMeteredEntitlement({ customerId, featureId: TEMPLATES_FEATURE_ID });
     const campaignsEntitlement = await stiggClient.getMeteredEntitlement({ customerId, featureId: CAMPAIGNS_FEATURE_ID });
+    console.log("Templates Entitlement:", templatesEntitlement);
+    console.log("Campaigns Entitlement:", campaignsEntitlement);
+  
     return res.json({
       hiddenMessage: 'Hidden message: Welcome to the analytics dashboard — you’re in!',
       templateCount: templatesEntitlement.currentUsage,
