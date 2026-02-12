@@ -53,11 +53,9 @@ export default function Analytics() {
           }
         >
           <p className="analytics-intro">Overview of your usage and activity.</p>
-          {hiddenMessage && (
-            <p className="analytics-hidden-message" role="status">
-              {hiddenMessage}
-            </p>
-          )}
+          <p className="analytics-hidden-message" role="status">
+            {hiddenMessage ?? 'That is where the hidden message is supposed to be.'}
+          </p>
           <div className="analytics-cards">
             <div className="analytics-card">
               <span className="analytics-card__label">Templates</span>
