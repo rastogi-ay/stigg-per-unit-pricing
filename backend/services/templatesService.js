@@ -1,29 +1,33 @@
-import { stiggClient } from '../stigg.js';
+import { stiggClient, TEMPLATES_FEATURE_ID, FeatureDeniedError } from '../stigg.js';
 
-const templatesStore = [];
-
-function getAll() {
-  return templatesStore;
-}
-
-async function saveTemplate(customerId, featureId, template) {
-  // first, check if the customer is entitled to create a template
+async function getTemplates(customerId) {
   const entitlement = await stiggClient.getMeteredEntitlement({
     customerId,
-    featureId,
+    featureId: TEMPLATES_FEATURE_ID,
+  });
+  return {
+    currentUsage: entitlement.currentUsage,
+    usageLimit: entitlement.usageLimit,
+  };
+}
+
+async function saveTemplate(customerId) {
+  const entitlement = await stiggClient.getMeteredEntitlement({
+    customerId,
+    featureId: TEMPLATES_FEATURE_ID,
     options: { requestedUsage: 1 },
   });
   console.log("Templates Entitlement:", entitlement);
   if (!entitlement.hasAccess) {
-    const error = new Error('You do not have access to the feature. Please upgrade your plan.');
-    error.statusCode = 403;
-    throw error;
+    throw new FeatureDeniedError();
   }
-  // then, report the usage to Stigg
-  const reportUsage = await stiggClient.reportUsage({ customerId, featureId, value: 1 });
+  const reportUsage = await stiggClient.reportUsage({ customerId, featureId: TEMPLATES_FEATURE_ID, value: 1 });
+  const newCurrentUsage = entitlement.currentUsage + 1;
   console.log("Reported Usage of Template:", reportUsage);
-  templatesStore.push(template);
-  return template;
+  return {
+    message: "Template creation successfully reported to Stigg",
+    currentUsage: newCurrentUsage,
+  };
 }
 
-export { getAll, saveTemplate };
+export { getTemplates, saveTemplate };

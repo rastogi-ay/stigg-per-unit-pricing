@@ -12,9 +12,6 @@ export default function AppNav() {
         <NavLink to="/" end className={({ isActive }) => isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'}>
           Templates
         </NavLink>
-        <NavLink to="/campaigns" className={({ isActive }) => isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'}>
-          Campaigns
-        </NavLink>
         <NavLink to="/analytics" className={({ isActive }) => isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'}>
           Analytics
         </NavLink>

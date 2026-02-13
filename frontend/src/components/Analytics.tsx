@@ -1,33 +1,32 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import '../styles/App.css';
 import '../styles/Analytics.css';
-import { fetchAnalytics } from '../api/analytics';
-import { useBooleanEntitlement } from '@stigg/react-sdk';
+import { fetchAnalytics } from '../api/analyticsApi';
 
 const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
-const ANALYTICS_FEATURE_ID = 'feature-04-analytics'; // feature ID from Stigg
 
 export default function Analytics() {
-  // Stigg context to get the relevant entitlement information for the analytics feature
-  const { hasAccess } = useBooleanEntitlement({ featureId: ANALYTICS_FEATURE_ID });
-
   const [hiddenMessage, setHiddenMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // if the customer does not have access to the analytics feature, return
-    if (!hasAccess) return;
-
-    async function load() {
+    async function loadPage() {
       try {
-        const message = await fetchAnalytics(CUSTOMER_ID, ANALYTICS_FEATURE_ID);
-        setHiddenMessage(message);
-      } catch {
+        const { hiddenMessage } = await fetchAnalytics(CUSTOMER_ID);
+        setHiddenMessage(hiddenMessage);
+        toast.success('Analytics loaded successfully', {
+          toastId: 'analytics-success',
+        });
+      } catch (error: any) {
         setHiddenMessage(null);
+        toast.error(error.message, {
+          toastId: 'analytics-error',
+        });
       }
     }
 
-    load();
-  }, [hasAccess]);
+    loadPage();
+  }, []);
 
   return (
     <div className="app analytics-page">
@@ -35,7 +34,7 @@ export default function Analytics() {
       <div className="analytics-content-wrapper">
         <div
           className={
-            hasAccess
+            hiddenMessage
               ? 'analytics-content'
               : 'analytics-content analytics-content--blurred'
           }
@@ -44,20 +43,13 @@ export default function Analytics() {
             <div className="analytics-card">
               <span className="analytics-card__label">Analytics</span>
               <span className="analytics-card__value">
-                {hasAccess
-                  ? hiddenMessage === null
-                    ? '…'
-                    : hiddenMessage
+                {hiddenMessage
+                  ? hiddenMessage
                   : '—'}
               </span>
             </div>
           </div>
         </div>
-        {!hasAccess && (
-          <div className="analytics-content__overlay" aria-live="polite">
-            You don't have access to analytics.
-          </div>
-        )}
       </div>
     </div>
   );

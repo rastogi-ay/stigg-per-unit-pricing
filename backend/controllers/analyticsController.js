@@ -1,26 +1,25 @@
 import express from 'express';
 import * as analyticsService from '../services/analyticsService.js';
+import { FeatureDeniedError } from '../stigg.js';
 
 const router = express.Router();
 
 async function fetchAnalytics(req, res) {
   const customerId = req.query.customerId;
-  const featureId = req.query.featureId;
 
-  if (!customerId || !featureId) {
-    return res.status(400).json({ error: 'customerId and featureId are required' });
+  if (!customerId) {
+    return res.status(400).json({ error: 'customerId is required' });
   }
 
   try {
-    // checks if the customer is entitled to analytics
-    const data = await analyticsService.getAnalytics(customerId, featureId);
-    return res.json(data);
+    const data = await analyticsService.getAnalytics(customerId);
+    return res.status(200).json(data);
   } catch (error) {
-    if (error.statusCode === 403) {
-      return res.status(403).json({ error: error.message });
+    if (error instanceof FeatureDeniedError) {
+      return res.status(403).json({ error: 'You do not have access to analytics. Please upgrade your plan.' });
     }
     console.error('Failed to get analytics:', error);
-    return res.status(500).json({ error: 'Failed to load analytics' });
+    return res.status(500).json({ error: 'Failed to get analytics' });
   }
 }
 

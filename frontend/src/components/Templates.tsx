@@ -1,72 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import '../styles/App.css';
 import '../styles/Template.css';
-import { fetchTemplates, createTemplate } from '../api/templates';
-import { useMeteredEntitlement, useStiggContext } from '@stigg/react-sdk';
+import { createTemplate, fetchTemplates } from '../api/templatesApi';
 
 const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
-const TEMPLATES_FEATURE_ID = 'feature-01-templates'; // feature ID from Stigg
-
-export interface Template {
-  id: number;
-  title: string;
-  description: string;
-}
 
 function Templates() {
-  // Stigg context to get the relevant entitlement information for the templates feature
-  const { refreshData } = useStiggContext();
-  const { currentUsage, usageLimit } = useMeteredEntitlement({ featureId: TEMPLATES_FEATURE_ID });
-  const canCreateTemplate = usageLimit !== undefined && currentUsage < usageLimit;
-
-  const [templates, setTemplates] = useState<Template[]>([]);
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [currentUsage, setCurrentUsage] = useState(0);
+  const [usageLimit, setUsageLimit] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    async function loadUsage() {
+      try {
+        const { currentUsage, usageLimit } = await fetchTemplates(CUSTOMER_ID);
+        setCurrentUsage(currentUsage);
+        setUsageLimit(usageLimit);
+        toast.success('Templates loaded successfully', {
+          toastId: 'templates-success',
+        });
+      } catch {
+        toast.error('Failed to load templates', {
+          toastId: 'templates-error',
+        });
+      }
+    }
+    loadUsage();
+  }, []);
 
   const handleAdd = async () => {
     if (title.trim()) {
-      const newTemplate: Template = {
-        id: Date.now(),
-        title: title.trim(),
-        description: description.trim(),
-      };
-
       try {
-        if (canCreateTemplate) {
-          // create the template and report the usage to Stigg
-          const template = await createTemplate(newTemplate, CUSTOMER_ID, TEMPLATES_FEATURE_ID);
-          // refresh the data immediately to update the entitlement status
-          await refreshData();
-          setTemplates((prev) => [...prev, template]);
-          setTitle('');
-          setDescription('');
-        } else {
-          console.error("You don't have access to templates.");
-        }
-      } catch (error) {
-        console.error('Failed to create template:', error);
+        const result = await createTemplate(CUSTOMER_ID);
+        setCurrentUsage(result.currentUsage);
+        setTitle('');
+        toast.success(result.message, {
+          toastId: 'templates-create-success',
+        });
+      } catch (error: any) {
+        toast.error(error.message, {
+          toastId: 'templates-create-error',
+        });
       }
     }
   };
-
-  useEffect(() => {
-    async function load() {
-      const list = await fetchTemplates();
-      setTemplates(list);
-    }
-    load();
-  }, []);
 
   return (
     <div className="app">
       <h1>Templates</h1>
 
       <div className="templates-usage">
-        {!canCreateTemplate && (
-          <span className="templates-usage__text templates-usage__error">
-            You don't have access to templates.
-          </span>
-        )}
         {usageLimit !== undefined && (
           <>
             <span className="templates-usage__text">
@@ -94,41 +78,12 @@ function Templates() {
           onChange={(e) => setTitle(e.target.value)}
           className="input-field"
         />
-        <div className="description-wrapper">
-          <input
-            type="text"
-            placeholder="Template description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="input-field"
-          />
-        </div>
         <button
           onClick={handleAdd}
           className="add-button"
-          disabled={!canCreateTemplate}
         >
           Add Template (& report usage to Stigg)
         </button>
-      </div>
-
-      <div className="tasks-section">
-        {templates.length === 0 ? (
-          <p className="empty-message">No templates yet. Add one above!</p>
-        ) : (
-          <ul className="task-list">
-            {templates.map((template) => (
-              <li key={template.id} className="template-item">
-                <div className="template-content">
-                  <h3 className="template-title">{template.title}</h3>
-                  {template.description && (
-                    <p className="template-description">{template.description}</p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     </div>
   );

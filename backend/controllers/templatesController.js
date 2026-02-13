@@ -1,33 +1,44 @@
 import express from 'express';
 import * as templatesService from '../services/templatesService.js';
+import { FeatureDeniedError } from '../stigg.js';
 
 const router = express.Router();
 
-function fetchTemplates(req, res) {
-  const templates = templatesService.getAll();
-  return res.json(templates);
-}
+async function fetchTemplates(req, res) {
+  const customerId = req.query.customerId;
 
-async function createTemplate(req, res) {
-  const { template, customerId, featureId } = req.body;
-
-  if (!template || !customerId || !featureId) {
-    return res.status(400).json({ error: 'Template, customerId and featureId are required' });
+  if (!customerId) {
+    return res.status(400).json({ error: 'Customer ID is required' });
   }
 
   try {
-    // checks if the customer is entitled to create a template and (if so) report the usage to Stigg
-    const created = await templatesService.saveTemplate(customerId, featureId, template);
-    return res.status(201).json(created);
+    const result = await templatesService.getTemplates(customerId);
+    return res.status(200).json(result);
   } catch (error) {
-    if (error.statusCode === 403) {
-      return res.status(403).json({ error: error.message });
-    }
-    console.error('Failed to create template:', error);
-    return res.status(500).json({ error: 'Failed to create template' });
+    console.error('Failed to get templates:', error);
+    return res.status(500).json({ error: 'Failed to get templates' });
   }
 }
 
-router.get('/', fetchTemplates);
+async function createTemplate(req, res) {
+  const { customerId } = req.body;
+
+  if (!customerId) {
+    return res.status(400).json({ error: 'Customer ID is required' });
+  }
+
+  try {
+    const result = await templatesService.saveTemplate(customerId);
+    return res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof FeatureDeniedError) {
+      return res.status(403).json({ error: 'You cannot create another template. Please upgrade your plan.' });
+    }
+    console.error('Failed to save template:', error);
+    return res.status(500).json({ error: 'Failed to save template' });
+  }
+}
+
 router.post('/', createTemplate);
+router.get('/', fetchTemplates);
 export default router;
