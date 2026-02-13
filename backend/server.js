@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import templatesRouter from './routes/templates.js';
-import campaignsRouter from './routes/campaigns.js';
-import analyticsRouter from './routes/analytics.js';
+import templatesController from './controllers/templatesController.js';
+import campaignsController from './controllers/campaignsController.js';
+import analyticsController from './controllers/analyticsController.js';
 import { stiggClient } from './stigg.js';
 
 dotenv.config();
@@ -24,10 +24,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Routes
-app.use('/api/templates', templatesRouter);
-app.use('/api/campaigns', campaignsRouter);
-app.use('/api/analytics', analyticsRouter);
+// Controllers
+app.use('/api/templates', templatesController);
+app.use('/api/campaigns', campaignsController);
+app.use('/api/analytics', analyticsController);
 
 // Start the server, wait for Stigg client to initialize
 export async function startServer() {
