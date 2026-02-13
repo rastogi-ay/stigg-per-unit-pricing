@@ -22,21 +22,10 @@
   letter-spacing: -0.02em;
 }
 
-.app-nav__customer {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
-}
-
 .app-nav__links {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.app-nav__plans {
-  margin-left: 0.5rem;
 }
 
 .app-nav__link {

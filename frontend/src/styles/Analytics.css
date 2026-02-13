@@ -13,19 +13,6 @@
   user-select: none;
 }
 
-.analytics-content__overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  text-align: center;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #e57373;
-}
-
 .analytics-cards {
   display: flex;
   gap: 1.5rem;
