@@ -10,13 +10,17 @@ export const fetchCampaigns = async (): Promise<Campaign[]> => {
   return response.json();
 };
 
-export const createCampaign = async (campaign: Campaign, customerId: string): Promise<Campaign> => {
+export const createCampaign = async (
+  campaign: Campaign,
+  customerId: string,
+  featureId: string,
+): Promise<Campaign> => {
   const response = await fetch(`${API_BASE_URL}/api/campaigns`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ campaign, customerId }),
+    body: JSON.stringify({ campaign, customerId, featureId }),
   });
   if (!response.ok) {
     throw new Error('Failed to create campaign');

@@ -1,6 +1,5 @@
 import express from 'express';
-import { stiggClient } from '../stigg/stigg.js';
-import { CAMPAIGNS_FEATURE_ID } from '../stigg/features.js';
+import { stiggClient } from '../stigg.js';
 
 const router = express.Router();
 export const campaignsStore = [];
@@ -10,17 +9,17 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { campaign, customerId } = req.body;
+  const { campaign, customerId, featureId } = req.body;
 
-  if (!campaign || !customerId) {
-    return res.status(400).json({ error: 'Campaign and customerId are required' });
+  if (!campaign || !customerId || !featureId) {
+    return res.status(400).json({ error: 'Campaign, customerId and featureId are required' });
   }
 
   try {
     // first, check if the customer is entitled to create a campaign
     const entitlement = await stiggClient.getMeteredEntitlement({
       customerId,
-      featureId: CAMPAIGNS_FEATURE_ID,
+      featureId,
       options: { requestedUsage: 1 },
     });
     console.log("Campaigns Entitlement:", entitlement);
@@ -28,7 +27,7 @@ router.post('/', async (req, res) => {
       return res.status(403).json({ error: 'You do not have access to the feature. Please upgrade your plan.' });
     }
     // then, we'll report the usage to Stigg and save the campaign to our "database"
-    const reportUsage = await stiggClient.reportUsage({ customerId, featureId: CAMPAIGNS_FEATURE_ID, value: 1 });
+    const reportUsage = await stiggClient.reportUsage({ customerId, featureId, value: 1 });
     console.log("Reported Usage of Campaign:", reportUsage);
     campaignsStore.push(campaign);
 

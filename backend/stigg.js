@@ -1,10 +1,12 @@
 import dotenv from 'dotenv';
 import { Stigg } from '@stigg/node-server-sdk';
-import { TEMPLATES_FEATURE_ID } from './features.js';
-import { CAMPAIGNS_FEATURE_ID } from './features.js';
-import { ANALYTICS_FEATURE_ID } from './features.js';
 
 dotenv.config();
+
+// Feature IDs for the different features from Stigg
+export const TEMPLATES_FEATURE_ID = 'feature-01-templates';
+export const CAMPAIGNS_FEATURE_ID = 'feature-02-campaigns';
+export const ANALYTICS_FEATURE_ID = 'feature-04-analytics';
 
 export const stiggClient = Stigg.initialize({
   // Stigg server API key from Stigg environment

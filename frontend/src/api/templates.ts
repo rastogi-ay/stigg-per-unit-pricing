@@ -10,13 +10,17 @@ export const fetchTemplates = async (): Promise<Template[]> => {
   return response.json();
 };
 
-export const createTemplate = async (template: Template, customerId: string): Promise<Template> => {
+export const createTemplate = async (
+  template: Template,
+  customerId: string,
+  featureId: string,
+): Promise<Template> => {
   const response = await fetch(`${API_BASE_URL}/api/templates`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ template, customerId }),
+    body: JSON.stringify({ template, customerId, featureId }),
   });
   if (!response.ok) {
     throw new Error('Failed to create template');

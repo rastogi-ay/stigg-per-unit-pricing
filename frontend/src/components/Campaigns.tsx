@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import '../styles/App.css';
 import '../styles/Campaigns.css';
-import { useGetMeteredEntitlement } from '../entitlements/useGetMeteredEntitlement';
 import { fetchCampaigns, createCampaign } from '../api/campaigns';
+import { useMeteredEntitlement, useStiggContext } from '@stigg/react-sdk';
 
 const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
 const CAMPAIGNS_FEATURE_ID = 'feature-02-campaigns'; // feature ID from Stigg
@@ -14,8 +14,10 @@ export interface Campaign {
 }
 
 export default function Campaigns() {
-  // custom hook to get the relevant entitlement information for the campaigns feature
-  const { currentUsage, usageLimit, hasAccess, refreshData } = useGetMeteredEntitlement(CAMPAIGNS_FEATURE_ID);
+  // Stigg context to get the relevant entitlement information for the campaigns feature
+  const { refreshData } = useStiggContext();
+  const { currentUsage, usageLimit } = useMeteredEntitlement({ featureId: CAMPAIGNS_FEATURE_ID });
+  const canCreateCampaign = usageLimit !== undefined && currentUsage < usageLimit;
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [name, setName] = useState('');
@@ -29,9 +31,9 @@ export default function Campaigns() {
         description: description.trim() || undefined,
       };
       try {
-        if (hasAccess) {
+        if (canCreateCampaign) {
           // create the campaign and report the usage to Stigg
-          const campaign = await createCampaign(newCampaign, CUSTOMER_ID);
+          const campaign = await createCampaign(newCampaign, CUSTOMER_ID, CAMPAIGNS_FEATURE_ID);
           // refresh the data immediately to update the entitlement status
           await refreshData();
           setCampaigns((prev) => [...prev, campaign]);
@@ -59,7 +61,7 @@ export default function Campaigns() {
       <h1>Campaigns</h1>
 
       <div className="templates-usage">
-        {!hasAccess && (
+        {!canCreateCampaign && (
           <span className="templates-usage__text templates-usage__error">
             You don't have access to campaigns.
           </span>
@@ -98,7 +100,7 @@ export default function Campaigns() {
           onChange={(e) => setDescription(e.target.value)}
           className="input-field"
         />
-        <button type="button" onClick={handleAdd} className="add-button" disabled={!hasAccess}>
+        <button type="button" onClick={handleAdd} className="add-button" disabled={!canCreateCampaign}>
           Add Campaign (& report usage to Stigg)
         </button>
       </div>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import '../styles/App.css';
 import '../styles/Template.css';
-import { useGetMeteredEntitlement } from '../entitlements/useGetMeteredEntitlement';
 import { fetchTemplates, createTemplate } from '../api/templates';
+import { useMeteredEntitlement, useStiggContext } from '@stigg/react-sdk';
 
 const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
 const TEMPLATES_FEATURE_ID = 'feature-01-templates'; // feature ID from Stigg
@@ -14,8 +14,10 @@ export interface Template {
 }
 
 function Templates() {
-  // custom hook to get the relevant entitlement information for the templates feature
-  const { currentUsage, usageLimit, hasAccess, refreshData } = useGetMeteredEntitlement(TEMPLATES_FEATURE_ID);
+  // Stigg context to get the relevant entitlement information for the templates feature
+  const { refreshData } = useStiggContext();
+  const { currentUsage, usageLimit } = useMeteredEntitlement({ featureId: TEMPLATES_FEATURE_ID });
+  const canCreateTemplate = usageLimit !== undefined && currentUsage < usageLimit;
 
   const [templates, setTemplates] = useState<Template[]>([]);
   const [title, setTitle] = useState('');
@@ -30,9 +32,9 @@ function Templates() {
       };
 
       try {
-        if (hasAccess) {
+        if (canCreateTemplate) {
           // create the template and report the usage to Stigg
-          const template = await createTemplate(newTemplate, CUSTOMER_ID);
+          const template = await createTemplate(newTemplate, CUSTOMER_ID, TEMPLATES_FEATURE_ID);
           // refresh the data immediately to update the entitlement status
           await refreshData();
           setTemplates((prev) => [...prev, template]);
@@ -60,7 +62,7 @@ function Templates() {
       <h1>Templates</h1>
 
       <div className="templates-usage">
-        {!hasAccess && (
+        {!canCreateTemplate && (
           <span className="templates-usage__text templates-usage__error">
             You don't have access to templates.
           </span>
@@ -104,7 +106,7 @@ function Templates() {
         <button
           onClick={handleAdd}
           className="add-button"
-          disabled={!hasAccess}
+          disabled={!canCreateTemplate}
         >
           Add Template (& report usage to Stigg)
         </button>

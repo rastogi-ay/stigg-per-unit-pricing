@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import templatesRouter from './routes/templates.js';
 import campaignsRouter from './routes/campaigns.js';
 import analyticsRouter from './routes/analytics.js';
-import { stiggClient } from './stigg/stigg.js';
+import { stiggClient } from './stigg.js';
 
 dotenv.config();
 
