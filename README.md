@@ -1,14 +1,13 @@
 # Per-Unit Pricing (Stigg Example)
 
-Example app demonstrating **feature gating** with the **the per-unit pricing model** sandbox from [Stigg](https://www.stigg.io/). Includes a React frontend and a Node.js backend that enforce entitlements and report usage.
+Example app demonstrating **feature gating** with **the per-unit pricing model** sandbox from [Stigg](https://www.stigg.io/). Includes a React frontend and a Node.js backend that enforce entitlements and report usage.
 
 ## Purpose
 
 This repo is a **lightweight reference implementation** for:
 
-- **Entitlements (boolean and metered)** — Metered features for Templates and Campaigns (usage limits, reporting when items are created). Boolean feature for Analytics (gated access).
-- **Server-side enforcement** — The backend uses the Stigg Node SDK to validate entitlements and report usage before performing actions.
-- **Frontend experience** — The frontend uses the Stigg React SDK for entitlement-aware UI.
+- **Entitlements (boolean and metered)** — Metered features for Templates and Messages (usage limits, reporting when items are created). Boolean feature for Analytics (gated access).
+- **Server-side enforcement** — The backend uses the Stigg Node SDK to validate entitlements and report usage / events.
 
 ## Setup
 
@@ -82,23 +81,17 @@ Edit `frontend/.env`:
 
 ### 4. Run the app
 
-Start the backend, then the frontend (two terminals):
+Start the backend, then the frontend:
 
 ```bash
-# Terminal 1 – backend
 cd backend
 npm start
 
-# Terminal 2 – frontend
-cd frontend && npm run dev
+cd frontend
+npm run dev
 ```
 
 - Backend: `http://localhost:8000`
 - Frontend: `http://localhost:5173` (or the port Vite prints)
 
 Use the app with the same customer you set as `VITE_STIGG_CUSTOMER_ID` so entitlements and usage line up.
-
-## Limitations
-
-- **In-memory storage** — Templates and campaigns are stored only in memory. Restarting the backend wipes all data. Usage reported to Stigg is the source of truth for counts in Analytics.
-- **Single-customer demo** — The app is built around one customer ID from env. There is no login or multi-tenant auth; all requests use that same customer for Stigg.
