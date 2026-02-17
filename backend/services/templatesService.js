@@ -22,8 +22,8 @@ async function saveTemplate(customerId) {
     throw new FeatureDeniedError();
   }
   const reportUsage = await stiggClient.reportUsage({ customerId, featureId: TEMPLATES_FEATURE_ID, value: 1 });
-  const newCurrentUsage = entitlement.currentUsage + 1;
   console.log("Reported Usage of Template:", reportUsage);
+  const newCurrentUsage = entitlement.currentUsage + 1;
   return {
     message: "Template creation successfully reported to Stigg",
     currentUsage: newCurrentUsage,

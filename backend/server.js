@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import templatesController from './controllers/templatesController.js';
+import messagesController from './controllers/messagesController.js';
 import analyticsController from './controllers/analyticsController.js';
 import { stiggClient } from './stigg.js';
 
@@ -25,6 +26,7 @@ app.use(express.json());
 
 // Controllers
 app.use('/api/templates', templatesController);
+app.use('/api/messages', messagesController);
 app.use('/api/analytics', analyticsController);
 
 // Start the server, wait for Stigg client to initialize

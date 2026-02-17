@@ -2,15 +2,27 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import '../styles/App.css';
 import '../styles/Messages.css';
+import { sendMessage } from '../api/messagesApi';
+
+const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
 
 export default function Messages() {
   const [message, setMessage] = useState('');
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!message.trim()) return;
 
-    toast.success('Message sent', { toastId: 'messages-send-success' });
-    setMessage('');
+    try {
+      const result = await sendMessage(CUSTOMER_ID);
+      setMessage('');
+      toast.success(result.message,
+        { toastId: 'messages-send-success' }
+      );
+    } catch (error: any) {
+      toast.error(error.message,
+        { toastId: 'messages-send-error' }
+      );
+    }
   };
 
   return (
