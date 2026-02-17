@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppNav from './components/AppNav';
 import Templates from './components/Templates';
+import Messages from './components/Messages';
 import Analytics from './components/Analytics';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <AppNav />
         <Routes>
           <Route path="/" element={<Templates />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/analytics" element={<Analytics />} />
         </Routes>
       </BrowserRouter>

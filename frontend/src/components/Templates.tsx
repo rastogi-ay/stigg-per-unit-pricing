@@ -17,9 +17,6 @@ function Templates() {
         const { currentUsage, usageLimit } = await fetchTemplates(CUSTOMER_ID);
         setCurrentUsage(currentUsage);
         setUsageLimit(usageLimit);
-        toast.success('Templates loaded successfully', {
-          toastId: 'templates-success',
-        });
       } catch {
         toast.error('Failed to load templates', {
           toastId: 'templates-error',

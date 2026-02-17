@@ -14,9 +14,6 @@ export default function Analytics() {
       try {
         const { hiddenMessage } = await fetchAnalytics(CUSTOMER_ID);
         setHiddenMessage(hiddenMessage);
-        toast.success('Analytics loaded successfully', {
-          toastId: 'analytics-success',
-        });
       } catch (error: any) {
         setHiddenMessage(null);
         toast.error(error.message, {
