@@ -1,14 +1,11 @@
 import express from 'express';
 import * as messagesService from '../services/messagesService.js';
+import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = express.Router();
 
 async function createMessage(req, res) {
-  const { customerId } = req.body;
-
-  if (!customerId) {
-    return res.status(400).json({ error: 'Customer ID is required' });
-  }
+  const customerId = req.stiggCustomerId;
 
   try {
     const result = await messagesService.sendMessage(customerId);
@@ -19,5 +16,5 @@ async function createMessage(req, res) {
   }
 }
 
-router.post('/', createMessage);
+router.post('/', requireAuth, createMessage);
 export default router;

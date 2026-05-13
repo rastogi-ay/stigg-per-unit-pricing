@@ -1,25 +1,26 @@
 import { useState } from 'react';
+import { useAuth } from '@clerk/react';
 import { toast } from 'react-toastify';
 import '../styles/App.css';
 import '../styles/Messages.css';
 import { sendMessage } from '../api/messagesApi';
 
-const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
-
 export default function Messages() {
+  const { getToken } = useAuth();
   const [message, setMessage] = useState('');
 
   const handleSend = async () => {
     if (!message.trim()) return;
 
     try {
-      const result = await sendMessage(CUSTOMER_ID);
+      const result = await sendMessage(getToken);
       setMessage('');
       toast.success(result.message,
         { toastId: 'messages-send-success' }
       );
-    } catch (error: any) {
-      toast.error(error.message,
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Request failed';
+      toast.error(msg,
         { toastId: 'messages-send-error' }
       );
     }

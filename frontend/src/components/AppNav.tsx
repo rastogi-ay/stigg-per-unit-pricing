@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { UserButton } from '@clerk/react';
 import '../styles/AppNav.css';
 import '../styles/App.css';
 
@@ -18,6 +19,9 @@ export default function AppNav() {
         <NavLink to="/analytics" className={({ isActive }) => isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'}>
           Analytics
         </NavLink>
+        <div className="app-nav__user">
+          <UserButton />
+        </div>
       </div>
     </nav>
   );

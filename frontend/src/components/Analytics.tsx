@@ -1,29 +1,30 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/react';
 import { toast } from 'react-toastify';
 import '../styles/App.css';
 import '../styles/Analytics.css';
 import { fetchAnalytics } from '../api/analyticsApi';
 
-const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
-
 export default function Analytics() {
+  const { getToken } = useAuth();
   const [hiddenMessage, setHiddenMessage] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadPage() {
       try {
-        const { hiddenMessage } = await fetchAnalytics(CUSTOMER_ID);
+        const { hiddenMessage } = await fetchAnalytics(getToken);
         setHiddenMessage(hiddenMessage);
-      } catch (error: any) {
+      } catch (error: unknown) {
         setHiddenMessage(null);
-        toast.error(error.message, {
+        const message = error instanceof Error ? error.message : 'Request failed';
+        toast.error(message, {
           toastId: 'analytics-error',
         });
       }
     }
 
     loadPage();
-  }, []);
+  }, [getToken]);
 
   return (
     <div className="app analytics-page">

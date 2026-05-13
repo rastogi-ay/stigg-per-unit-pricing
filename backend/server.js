@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { clerkMiddleware } from '@clerk/express';
 import templatesController from './controllers/templatesController.js';
 import messagesController from './controllers/messagesController.js';
 import analyticsController from './controllers/analyticsController.js';
@@ -22,9 +23,10 @@ app.use(cors({
   ],
   credentials: true,
 }));
+app.use(clerkMiddleware());
 app.use(express.json());
 
-// Controllers
+// Controllers (auth / Stigg customer: applied per-route inside each router)
 app.use('/api/templates', templatesController);
 app.use('/api/messages', messagesController);
 app.use('/api/analytics', analyticsController);

@@ -1,15 +1,12 @@
 import express from 'express';
 import * as analyticsService from '../services/analyticsService.js';
 import { FeatureDeniedError } from '../stigg.js';
+import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = express.Router();
 
 async function fetchAnalytics(req, res) {
-  const customerId = req.query.customerId;
-
-  if (!customerId) {
-    return res.status(400).json({ error: 'customerId is required' });
-  }
+  const customerId = req.stiggCustomerId;
 
   try {
     const data = await analyticsService.getAnalytics(customerId);
@@ -23,5 +20,5 @@ async function fetchAnalytics(req, res) {
   }
 }
 
-router.get('/', fetchAnalytics);
+router.get('/', requireAuth, fetchAnalytics);
 export default router;

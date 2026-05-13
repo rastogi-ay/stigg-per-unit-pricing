@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '@clerk/react';
 import { toast } from 'react-toastify';
 import '../styles/App.css';
 import '../styles/Template.css';
 import { createTemplate, fetchTemplates } from '../api/templatesApi';
 
-const CUSTOMER_ID = import.meta.env.VITE_STIGG_CUSTOMER_ID;
-
 function Templates() {
+  const { getToken } = useAuth();
   const [title, setTitle] = useState('');
   const [currentUsage, setCurrentUsage] = useState(0);
   const [usageLimit, setUsageLimit] = useState<number | undefined>(undefined);
@@ -14,7 +14,7 @@ function Templates() {
   useEffect(() => {
     async function loadUsage() {
       try {
-        const { currentUsage, usageLimit } = await fetchTemplates(CUSTOMER_ID);
+        const { currentUsage, usageLimit } = await fetchTemplates(getToken);
         setCurrentUsage(currentUsage);
         setUsageLimit(usageLimit);
       } catch {
@@ -24,19 +24,20 @@ function Templates() {
       }
     }
     loadUsage();
-  }, []);
+  }, [getToken]);
 
   const handleAdd = async () => {
     if (title.trim()) {
       try {
-        const result = await createTemplate(CUSTOMER_ID);
+        const result = await createTemplate(getToken);
         setCurrentUsage(result.currentUsage);
         setTitle('');
         toast.success(result.message, {
           toastId: 'templates-create-success',
         });
-      } catch (error: any) {
-        toast.error(error.message, {
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Request failed';
+        toast.error(message, {
           toastId: 'templates-create-error',
         });
       }

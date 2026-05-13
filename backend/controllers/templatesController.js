@@ -1,15 +1,12 @@
 import express from 'express';
 import * as templatesService from '../services/templatesService.js';
 import { FeatureDeniedError } from '../stigg.js';
+import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = express.Router();
 
 async function fetchTemplates(req, res) {
-  const customerId = req.query.customerId;
-
-  if (!customerId) {
-    return res.status(400).json({ error: 'Customer ID is required' });
-  }
+  const customerId = req.stiggCustomerId;
 
   try {
     const result = await templatesService.getTemplates(customerId);
@@ -21,11 +18,7 @@ async function fetchTemplates(req, res) {
 }
 
 async function createTemplate(req, res) {
-  const { customerId } = req.body;
-
-  if (!customerId) {
-    return res.status(400).json({ error: 'Customer ID is required' });
-  }
+  const customerId = req.stiggCustomerId;
 
   try {
     const result = await templatesService.saveTemplate(customerId);
@@ -39,6 +32,6 @@ async function createTemplate(req, res) {
   }
 }
 
-router.post('/', createTemplate);
-router.get('/', fetchTemplates);
+router.post('/', requireAuth, createTemplate);
+router.get('/', requireAuth, fetchTemplates);
 export default router;
